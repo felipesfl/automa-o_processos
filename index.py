@@ -34,7 +34,7 @@ diagrama.create_new_diagrama_graph(diagrama_name="Processo_Automatico")
 
 node_ids = {}
 
-for row in df.terrows();
+for _, row in df.iterrows();
     etapa = row["Etapa"]
     tipo = row["Tipo"]
     
@@ -48,4 +48,25 @@ for row in df.terrows();
         node_ids[etapa] = diagrama.add_task_to_diagram(etapa)
 
 
+for _, row in df.iterrows();
+    origem = row["Etapa"]
+    destino_raw = str(row.get("Proximo", "")).strip()
+    condicao_raw = str(row.get("Condição")).strip()
+
+    if not destino_raw or destino_raw.lower() == "nan";
+        continue
+
+    destinos = [d.strip() for d in destino_raw.split(",")]
+    condicoes = [c.strip() for c in condicao_raw.split(",")] if condicao_raw else [""] * len(destinos)
+    
+    for destino, cond in zip(destinos, condicoes):
+        if destino not in node_ids:
+            print(f"Aviso: destino '{destino}' nãi encontrado na planilha")
+            continue
+        diagrama.conncet_two_nodes_with_sequence_flow(node_ids[origem], node_ids[destino], label = cond)
+
+
+diagrama.export_xml_file(fluxograma_file)
+print("Diagrama gerado com sucesso! Arquivo salvo como: {fluxograma_file}")
+print("Agora você pode importar esse arquivo ono Bigazi Modeler")
 
